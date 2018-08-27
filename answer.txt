@@ -1,0 +1,84 @@
+1. 
+class NatsConnection
+{
+    private static $_instance = null;
+    protected $nats;
+
+    public function __construct(\Nats\ConnectionOptions $options = null)
+    {
+        $this->nats = new \Nats\Connection($options);
+    }
+
+    public static function getInstance(\Nats\ConnectionOptions $options = null)
+    {
+        if (empty(self::$_instance)) {
+            self::$_instance = new self($options);
+        }
+
+        return self::$_instance->nats;
+    }
+
+}
+
+/* где-то в composer.json есть 
+    "require": {
+        "repejota/nats": "dev-master"
+       ...
+*/
+
+2. 
+<?php
+
+namespace app\behaviors;
+
+
+use yii;
+use yii\base\Behavior;
+
+
+class Metatags extends Behavior
+{
+    public function events()
+    {
+        return [
+            yii\web\Controller::EVENT_BEFORE_ACTION => 'getTags'
+        ];
+    }
+
+    public function getTags()
+    {
+        yii::$app->params['metatags'] = $this->getTagsByRoute(Yii::$app->controller->route);
+    }
+
+
+    /**
+     * @param $route
+     * @return array
+     */
+    protected function getTagsByRoute($route)
+    {
+        $metaTage = [];
+        // ...
+        return $metaTage;
+    }
+
+}
+
+3. $data = $trip->getRow(['id' => 59]);
+
+4.
+<?php
+
+function getLines($file) {
+    $f = fopen($file, 'r');
+    if (!$f) throw new Exception();
+    while ($line = fgets($f)) {
+        yield $line;
+    }
+    fclose($f);
+}
+
+foreach (getLines( __FILE__ ) as $line) {
+    echo $line . "\n";
+}
+
